@@ -1,59 +1,74 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { Drawer } from "expo-router/drawer";
+import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { View, Text } from "react-native";
+import { DrawerItemList } from "@react-navigation/drawer";
 
-import { useColorScheme } from '@/components/useColorScheme';
-
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
-
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
-};
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
-
-export default function RootLayout() {
-  const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-    ...FontAwesome.font,
-  });
-
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
-  useEffect(() => {
-    if (error) throw error;
-  }, [error]);
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
-  return <RootLayoutNav />;
-}
-
-function RootLayoutNav() {
-  const colorScheme = useColorScheme();
-
+export default function Layout() {
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-      </Stack>
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Drawer
+        screenOptions={{
+          drawerPosition: "left",
+          drawerType: "front",
+          drawerStyle: {
+            backgroundColor: "#021520",
+            width: 250,
+          },
+          headerShown: true,
+          drawerInactiveBackgroundColor: "#021520",
+          drawerLabelStyle: {
+            color: "white",
+          },
+        }}
+        drawerContent={(props) => {
+          return (
+            <SafeAreaView style={{ flex: 1, backgroundColor: "#021520" }}>
+              <View
+                style={{
+                  height: 200,
+                  width: "100%",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  backgroundColor: "#021520",
+                  paddingBottom: 12,
+                }}
+              >
+                <Ionicons name="person" color="white" size={100} />
+                <Text
+                  style={{
+                    fontSize: 22,
+                    color: "white",
+                    fontWeight: "bold",
+                    marginVertical: 8,
+                  }}
+                >
+                  Can Gündüz
+                </Text>
+              </View>
+              <DrawerItemList {...props} />
+            </SafeAreaView>
+          );
+        }}
+      >
+        <Drawer.Screen
+          name="index"
+          options={{
+            drawerLabel: "Home",
+            drawerIcon: () => <Ionicons name="home" color="white" size={24} />,
+          }}
+        />
+        <Drawer.Screen
+          name="profile"
+          options={{
+            drawerLabel: "Profile",
+            drawerIcon: () => (
+              <Ionicons name="person" color="white" size={24} />
+            ),
+          }}
+        />
+      </Drawer>
+    </GestureHandlerRootView>
   );
 }
